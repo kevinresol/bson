@@ -1,0 +1,4 @@
+-cp tests
+-main RunTests
+-neko bin/test.n
+-lib bson

@@ -1,0 +1,12 @@
+{
+  "name": "bson",
+  "url": "https://github.com/kevinresol/bson",
+  "license": "MIT",
+  "tags": ["cross", "bson", "serialization"],
+  "description": "Pure Haxe implementation of the BSON spec",
+  "contributors": ["kevinresol"],
+  "version": "0.1.0",
+  "releasenote": "Initial release",
+  "classPath": "src",
+  "dependencies": {}
+}
