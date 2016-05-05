@@ -77,7 +77,7 @@ private class BsonInput extends BytesInput {
 				read(len);
 			
 			case BObjectId:
-				new ObjectId(read(12));
+				(read(12):ObjectId);
 				
 			case BBool:
 				readByte() == 1;
@@ -125,18 +125,18 @@ private class BsonInput extends BytesInput {
 	}
 	
 	public function readInt64() {
-		var low = readInt32(); // TODO: need investigation, high first? 
+		var low = readInt32();
 		var high = readInt32();
 		return Int64.make(high, low);
 	}
-	public function readUInt32() {
+	public function readUInt32():UInt {
 		var a = readInt16();
 		var b = readInt16();
-		return a + b * 65536.0;
+		return a + b * 65536;
 	}
 	public function readUInt64() {
-		var a = readInt32();
-		var b = readInt32();
+		var a = readUInt32();
+		var b = readUInt32();
 		return a + b * 4294967296.0;
 	}
 }

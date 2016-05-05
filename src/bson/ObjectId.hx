@@ -5,19 +5,24 @@ import haxe.io.BytesOutput;
 import haxe.crypto.Md5;
 
 @:forward
-abstract ObjectId(ObjectIdBase) from ObjectIdBase {
+abstract ObjectId(ObjectIdBase) from ObjectIdBase to ObjectIdBase {
 	
-	public inline function new(?bytes:Bytes) this = new ObjectIdBase(bytes);
+	public inline function new(?str:String) this = str == null ? new ObjectIdBase() : fromString(str);
 	
 	public static inline function is(o:Dynamic):Bool
 		return Std.is(o, ObjectIdBase);
 	
 	@:from
-	public static function fromString(s:String) {
+	public static function fromString(s:String):ObjectId {
 		if(s.length != 24) throw "String ObjectId should be of length 24";
 		var bytes = Bytes.alloc(12);
 		for(i in 0...12) bytes.set(i, Std.parseInt('0x' + s.substr(i << 1, 2)));
 		return new ObjectIdBase(bytes);
+	}
+	
+	@:from
+	public inline static function fromBytes(b:Bytes):ObjectId {
+		return new ObjectIdBase(b);
 	}
 	
 	@:op(A == B)

@@ -6,6 +6,9 @@ class Bson {
 	
 	public inline static function encode(o:Dynamic):Bytes
 		return BsonEncoder.encode(o);
+		
+	public inline static function encodeMultiple(o:Array<Dynamic>):Bytes
+		return BsonEncoder.encodeMultiple(o);
 	
 	public inline static function decode(bytes:Bytes):Dynamic
 		return BsonDecoder.decode(bytes);

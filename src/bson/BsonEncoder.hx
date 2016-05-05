@@ -14,6 +14,15 @@ class BsonEncoder {
 		bson.writeObject(o);
 		return bson.getBytes();
 	}
+	
+	public static function encodeMultiple(arr:Array<Dynamic>):Bytes {
+		var bson = new BsonOutput();
+		for(o in arr) {
+			if(Type.typeof(o) != TObject) throw "Cannot encode non-object"; // TODO: handle class instances and maps?
+			bson.writeObject(o);
+		}
+		return bson.getBytes();
+	}
 }
 
 private class BsonOutput extends BytesOutput {
