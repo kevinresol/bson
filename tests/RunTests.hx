@@ -35,7 +35,7 @@ class RunTests extends TestCase {
 			_id: new ObjectId('572ae3afe378209d612b3643'),
 			a: 'b',
 		}
-		assertEquals(STRING.replace(',' ,'').toLowerCase(), Bson.encode(data).toHex());
+		assertBytes(STRING, Bson.encode(data));
 	}
 	
 	function testEncodeDate() {
@@ -43,7 +43,7 @@ class RunTests extends TestCase {
 			_id: new ObjectId("572b4d524dd01c6e90e069eb"),
 			a: Date.fromTime(1462455634589),
 		}
-		assertEquals(DATE.replace(',' ,'').toLowerCase(), Bson.encode(data).toHex());
+		assertBytes(DATE, Bson.encode(data));
 	}
 	
 	function testEncodeInt64() {
@@ -51,7 +51,7 @@ class RunTests extends TestCase {
 			_id: new ObjectId("572b443e4dd01c6e90e069ea"), 
 			a: Int64.make(0x01, 0x23456789)
 		}
-		assertEquals(INT64.replace(',' ,'').toLowerCase(), Bson.encode(data).toHex());
+		assertBytes(INT64, Bson.encode(data));
 	}
 	
 	function testDecodeString() {
@@ -160,6 +160,10 @@ class RunTests extends TestCase {
 		} else {
 			assertEquals(a, b);
 		}
+	}
+	
+	function assertBytes(s:String, b:Bytes, ?pos:haxe.PosInfos) {
+		assertEquals(s.replace(',' ,'').toLowerCase(), b.toHex());
 	}
 	
 	function fail( reason:String, ?c : haxe.PosInfos ) : Void {
