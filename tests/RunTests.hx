@@ -21,6 +21,7 @@ class RunTests extends TestCase {
 	}
 	
 	function testComplex() {
+		
 		var data = {
 			_id: new ObjectId(),
 			title: 'My awesome post',
@@ -43,10 +44,65 @@ class RunTests extends TestCase {
 			monkey: null,
 			bool: true
 		};
-		
 		var encoded = Bson.encode(data);
 		// trace([for(i in 0...encoded.length) encoded.get(i).hex(2)].join(","));
 		var decoded = Bson.decode(encoded);
-		assertEquals(Std.string(data), Std.string(decoded));
+		compare(data, decoded);
+	}
+	
+	function compare(a:Dynamic, b:Dynamic, ?pos:haxe.PosInfos) {
+		
+		if(ObjectId.is(a)) {
+			
+			if(!ObjectId.is(b)) fail('b is not object id', pos);
+			var a:ObjectId = cast a;
+			var b:ObjectId = cast b;
+			assertTrue(a == b, pos);
+			
+		} else if(Std.is(a, String)) {
+			
+			if(!Std.is(b, String)) fail('b is not string', pos);
+			assertEquals(a, b, pos);
+			
+		} else if(Std.is(a, Date)) {
+			
+			if(!Std.is(b, Date)) fail('b is not date', pos);
+			var a:Date = cast a;
+			var b:Date = cast b;
+			assertTrue(Math.abs(a.getTime() - b.getTime()) < 1, pos); // rounding issue
+			
+		} else if (Std.is(a, Array)) {
+			
+			if(!Std.is(b, Array)) fail('b is not array', pos);
+			if(a.length != b.length) fail('not same length', pos);
+			for(i in 0...a.length) compare(a[i], b[i], pos);
+			
+		} else if(Int64.is(a)) {
+			
+			#if !java
+			if(!Int64.is(b)) fail('b is not int64', pos);
+			#end
+			var a:Int64 = cast a;
+			var b:Int64 = cast b;
+			assertTrue(a == b, pos);
+			
+		} else if(Reflect.isObject(a)) {
+			
+			if(!Reflect.isObject(b)) fail('b is not object', pos);
+			var keys = Reflect.fields(a);
+			if(keys.length != Reflect.fields(b).length) fail('not same number of keys', pos);
+			for(key in keys) compare(Reflect.field(a, key), Reflect.field(b, key), pos);
+			
+		} else {
+			assertEquals(a, b, pos);
+		}
+	}
+	
+	function fail( reason:String, ?c : haxe.PosInfos ) : Void {
+		currentTest.done = true;
+		currentTest.success = false;
+		currentTest.error   = reason;
+		currentTest.posInfos = c;
+		throw currentTest;
 	}
 }

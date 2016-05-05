@@ -19,13 +19,25 @@ abstract ObjectId(ObjectIdBase) from ObjectIdBase {
 		for(i in 0...12) bytes.set(i, Std.parseInt('0x' + s.substr(i << 1, 2)));
 		return new ObjectIdBase(bytes);
 	}
+	
+	@:op(A == B)
+	public inline function eq(b:ObjectId):Bool
+		return this.bytes.toHex() == b.bytes.toHex();
 }
 
 private class ObjectIdBase {
 	
 	static var pid = Std.random(65536);
 	static var sequence = 0;
-	static var machine = Bytes.ofString(Md5.encode(#if sys sys.net.Host.localhost() #else 'flash' #end));
+	static var machine = Bytes.ofString(Md5.encode(
+		#if php
+			try sys.net.Host.localhost() catch(e:Dynamic) 'php'
+		#elseif sys 
+			sys.net.Host.localhost() 
+		#else 
+			'flash' 
+		#end
+	));
 	
 	public var bytes(default, null):Bytes;
 	
