@@ -12,6 +12,11 @@ class BsonDecoder {
 	public static inline function decode(b:Bytes):Dynamic {
 		return new BsonInput(b).readObject();
 	}
+	
+	public static inline function decodeMultiple(b:Bytes, num = 1):Array<Dynamic> {
+		var input = new BsonInput(b);
+		return [for(i in 0...num) input.readObject()];
+	}
 }
 
 private class BsonInput extends BytesInput {
@@ -28,7 +33,7 @@ private class BsonInput extends BytesInput {
 			o.setField(field.key, field.value);
 			length -= field.length;
 		}
-		throw 'should not reach here';
+		return o;
 	}
 	
 	public function readArray():Array<Dynamic> {
@@ -43,7 +48,7 @@ private class BsonInput extends BytesInput {
 			array[Std.parseInt(field.key)] = field.value;
 			length -= field.length;
 		}
-		throw 'should not reach here';
+		return array;
 	}
 	
 	public function readField(type:BsonType) {
@@ -56,7 +61,7 @@ private class BsonInput extends BytesInput {
 			
 			case BString | BJavascript:
 				var len = readInt32();
-				var v = readString(len);
+				var v = readString(len - 1);
 				readByte(); // consume terminator
 				v;
 			
@@ -120,7 +125,7 @@ private class BsonInput extends BytesInput {
 	}
 	
 	public function readInt64() {
-		var low = readInt32();
+		var low = readInt32(); // TODO: need investigation, high first? 
 		var high = readInt32();
 		return Int64.make(high, low);
 	}

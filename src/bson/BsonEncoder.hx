@@ -55,7 +55,7 @@ private class BsonOutput extends BytesOutput {
 			case _ if(Std.is(value, String)):
 				var value:String = cast value;
 				writeHeader(key, BString);
-				writeInt32(value.length);
+				writeInt32(value.length + 1);
 				writeString(value);
 				writeByte(BTerminate);
 			

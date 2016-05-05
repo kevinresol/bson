@@ -9,4 +9,7 @@ class Bson {
 	
 	public inline static function decode(bytes:Bytes):Dynamic
 		return BsonDecoder.decode(bytes);
+		
+	public inline static function decodeMultiple(bytes:Bytes, num = 1):Dynamic
+		return BsonDecoder.decodeMultiple(bytes, num);
 }

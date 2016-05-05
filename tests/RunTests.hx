@@ -2,6 +2,7 @@ package;
 
 import bson.*;
 import haxe.Int64;
+import haxe.io.Bytes;
 import haxe.unit.TestRunner;
 import haxe.unit.TestCase;
 
@@ -18,6 +19,16 @@ class RunTests extends TestCase {
 			Sys.exit(500);
 			#end
 		}
+	}
+	
+	function testDecode() {
+		var str = "1F000000075F696400572AE3AFE378209D612B364302610002000000620000";
+		var bytes = Bytes.alloc(str.length >> 1);
+		for(i in 0...bytes.length) bytes.set(i, Std.parseInt('0x' + str.substr(i << 1, 2)));
+		var decoded = Bson.decode(bytes);
+		assertEquals('b', decoded.a);
+		var id:ObjectId = decoded._id;
+		assertEquals('572ae3afe378209d612b3643', id.valueOf());
 	}
 	
 	function testComplex() {
