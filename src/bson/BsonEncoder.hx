@@ -9,9 +9,13 @@ using Reflect;
 
 class BsonEncoder {
 	public static function encode(o:Dynamic):Bytes {
-		if(Type.typeof(o) != TObject) throw "Cannot encode non-object"; // TODO: handle class instances and maps?
 		var bson = new BsonOutput();
-		bson.writeObject(o);
+		if(Type.typeof(o) == TObject)
+			bson.writeObject(o);
+		else if(BsonDocument.is(o))
+			bson.writeBsonDocument(o);
+		else
+			throw "Cannot only encode object or BsonDocument"; // TODO: handle class instances and maps?
 		return bson.getBytes();
 	}
 	
@@ -33,17 +37,17 @@ private class BsonOutput extends BytesOutput {
 	}
 	
 	public function writeUInt32(n:Float) {
-		var a = Std.int(n / 65536);
-		var b = Math.round(n - a * 65536);
-		writeUInt16(b);
-		writeUInt16(a);
+		var high = Std.int(n / 65536.0);
+		var low = Math.round(n - high * 65536.0);
+		writeUInt16(low);
+		writeUInt16(high);
 	}
 	
 	public function writeUInt64(n:Float) {
-		var a = Math.ffloor(n / 4294967296);
-		var b = n - a * 4294967296;
-		writeUInt32(b);
-		writeUInt32(a);
+		var high = Math.ffloor(n / 4294967296.0);
+		var low = n - high * 4294967296.0;
+		writeUInt32(low);
+		writeUInt32(high);
 	}
 	
 	public function writeKeyValue(key:String, value:Dynamic) {
@@ -91,6 +95,10 @@ private class BsonOutput extends BytesOutput {
 			case _ if(Std.is(value, StringMap)):
 				writeHeader(key, BDocument);
 				writeMap(value);
+				
+			case _ if(BsonDocument.is(value)):
+				writeHeader(key, BDocument);
+				writeBsonDocument(value);
 			
 			case _ if(value.isObject()):
 				writeHeader(key, BDocument);
@@ -128,6 +136,16 @@ private class BsonOutput extends BytesOutput {
 			var value = o.field(key);
 			bson.writeKeyValue(key, value);
 		}
+		bson.writeByte(BTerminate);
+		var bytes = bson.getBytes();
+		writeInt32(bytes.length + 4); // include the 32-bit length value itself
+		write(bytes);
+	}
+	
+	public function writeBsonDocument(b:BsonDocument) {
+		var bson = new BsonOutput();
+		for(item in b)
+			bson.writeKeyValue(item.key, item.value);
 		bson.writeByte(BTerminate);
 		var bytes = bson.getBytes();
 		writeInt32(bytes.length + 4); // include the 32-bit length value itself

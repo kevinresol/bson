@@ -14,7 +14,11 @@ class RunTests extends TestCase {
 	static inline var STRING = "1F,00,00,00,07,5F,69,64,00,57,2A,E3,AF,E3,78,20,9D,61,2B,36,43,02,61,00,02,00,00,00,62,00,00";
 	
 	// {_id: ObjectId("572b4d524dd01c6e90e069eb"), a: Date.fromTime(1462455634589)}
-	static inline var DATE = "21,00,00,00,07,5F,69,64,00,57,2B,4D,52,4D,D0,1C,6E,90,E0,69,EB,09,61,00,9D,0A,26,81,54,01,00,00,00";
+	#if neko // date precision on neko
+		static inline var DATE = "21,00,00,00,07,5f,69,64,00,57,2b,4d,52,4d,d0,1c,6e,90,e0,69,eb,09,61,00,50,08,26,81,54,01,00,00,00";
+	#else
+		static inline var DATE = "21,00,00,00,07,5F,69,64,00,57,2B,4D,52,4D,D0,1C,6E,90,E0,69,EB,09,61,00,9D,0A,26,81,54,01,00,00,00";
+	#end
 	
 	// {_id: ObjectId("572b443e4dd01c6e90e069ea"), a: Int64.make(0x01, 0x23456789)}
 	static inline var INT64 = "21,00,00,00,07,5F,69,64,00,57,2B,44,3E,4D,D0,1C,6E,90,E0,69,EA,12,61,00,89,67,45,23,01,00,00,00,00";
@@ -31,7 +35,7 @@ class RunTests extends TestCase {
 	}
 	
 	function testEncodeString() {
-		var data = {
+		var data:BsonDocument = {
 			_id: new ObjectId('572ae3afe378209d612b3643'),
 			a: 'b',
 		}
@@ -39,7 +43,7 @@ class RunTests extends TestCase {
 	}
 	
 	function testEncodeDate() {
-		var data = {
+		var data:BsonDocument = {
 			_id: new ObjectId("572b4d524dd01c6e90e069eb"),
 			a: Date.fromTime(1462455634589),
 		}
@@ -47,7 +51,7 @@ class RunTests extends TestCase {
 	}
 	
 	function testEncodeInt64() {
-		var data = {
+		var data:BsonDocument = {
 			_id: new ObjectId("572b443e4dd01c6e90e069ea"), 
 			a: Int64.make(0x01, 0x23456789)
 		}
@@ -68,7 +72,7 @@ class RunTests extends TestCase {
 		assertTrue(Std.is(decoded.a, Date));
 		
 		var d:Date = decoded.a;
-		assertEquals(1462455634589, d.getTime());
+		assertDate(Date.fromTime(1462455634589), d);
 		var id:ObjectId = decoded._id;
 		assertEquals('572b4d524dd01c6e90e069eb', id.valueOf());
 	}
@@ -103,6 +107,7 @@ class RunTests extends TestCase {
 				]
 			},
 			date: Date.now(),
+			buggyDate: Date.fromTime(1462535772414),
 			int: 21474,
 			float: 2147483647.0,
 			monkey: null,
@@ -133,7 +138,7 @@ class RunTests extends TestCase {
 			if(!Std.is(b, Date)) fail('b is not date');
 			var a:Date = cast a;
 			var b:Date = cast b;
-			assertTrue(Math.abs(a.getTime() - b.getTime()) < 1); // rounding issue
+			assertDate(a, b);
 			
 		} else if (Std.is(a, Array)) {
 			
@@ -164,6 +169,14 @@ class RunTests extends TestCase {
 	
 	function assertBytes(s:String, b:Bytes, ?pos:haxe.PosInfos) {
 		assertEquals(s.replace(',' ,'').toLowerCase(), b.toHex());
+	}
+	
+	function assertDate(a:Date, b:Date, ?pos:haxe.PosInfos) {
+		#if (neko || cs)
+		assertEquals(Std.int(a.getTime() / 1000), Std.int(b.getTime() / 1000));
+		#else
+		assertEquals(a.getTime(), b.getTime());
+		#end
 	}
 	
 	function fail( reason:String, ?c : haxe.PosInfos ) : Void {

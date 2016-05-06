@@ -130,14 +130,14 @@ private class BsonInput extends BytesInput {
 		return Int64.make(high, low);
 	}
 	public function readUInt32():UInt {
-		var a = readInt16();
-		var b = readInt16();
-		return a + b * 65536;
+		var low = readInt16() & 0xffff;
+		var high = readInt16() & 0xffff;
+		return low + high * 65536;
 	}
 	public function readUInt64() {
-		var a = readUInt32();
-		var b = readUInt32();
-		return a + b * 4294967296.0;
+		var low = readUInt32();
+		var high = readUInt32();
+		return low + high * 4294967296.0;
 	}
 }
 
