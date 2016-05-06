@@ -14,8 +14,8 @@ class RunTests extends TestCase {
 	static inline var STRING = "1F,00,00,00,07,5F,69,64,00,57,2A,E3,AF,E3,78,20,9D,61,2B,36,43,02,61,00,02,00,00,00,62,00,00";
 	
 	// {_id: ObjectId("572b4d524dd01c6e90e069eb"), a: Date.fromTime(1462455634589)}
-	#if neko // date precision on neko
-		static inline var DATE = "21,00,00,00,07,5f,69,64,00,57,2b,4d,52,4d,d0,1c,6e,90,e0,69,eb,09,61,00,50,08,26,81,54,01,00,00,00";
+	#if (neko || python) // no ms precision
+		static inline var DATE = "21,00,00,00,07,5F,69,64,00,57,2B,4D,52,4D,D0,1C,6E,90,E0,69,EB,09,61,00,50,08,26,81,54,01,00,00,00";
 	#else
 		static inline var DATE = "21,00,00,00,07,5F,69,64,00,57,2B,4D,52,4D,D0,1C,6E,90,E0,69,EB,09,61,00,9D,0A,26,81,54,01,00,00,00";
 	#end
