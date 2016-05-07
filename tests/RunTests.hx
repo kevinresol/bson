@@ -50,6 +50,9 @@ class RunTests extends TestCase {
 		assertBytes(DATE, Bson.encode(data));
 	}
 	
+	#if !java
+	// Int64 is broken on java
+	// see https://github.com/HaxeFoundation/haxe/issues/5204
 	function testEncodeInt64() {
 		var data:BsonDocument = {
 			_id: new ObjectId("572b443e4dd01c6e90e069ea"), 
@@ -57,6 +60,7 @@ class RunTests extends TestCase {
 		}
 		assertBytes(INT64, Bson.encode(data));
 	}
+	#end
 	
 	function testDecodeString() {
 		var bytes = hexToBytes(STRING);
@@ -77,6 +81,9 @@ class RunTests extends TestCase {
 		assertEquals('572b4d524dd01c6e90e069eb', id.valueOf());
 	}
 	
+	#if !java
+	// Int64 is broken on java
+	// see https://github.com/HaxeFoundation/haxe/issues/5204
 	function testDecodeInt64() {
 		var bytes = hexToBytes(INT64);
 		var decoded = Bson.decode(bytes);
@@ -87,6 +94,7 @@ class RunTests extends TestCase {
 		var id:ObjectId = decoded._id;
 		assertEquals('572b443e4dd01c6e90e069ea', id.valueOf());
 	}
+	#end
 	
 	function testComplex() {
 		

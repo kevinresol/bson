@@ -1,4 +1,4 @@
-# BSON
+# BSON [![Build Status](https://travis-ci.org/kevinresol/bson.svg?branch=master)](https://travis-ci.org/kevinresol/bson)
 
 Pure Haxe implementation of the BSON spec http://bsonspec.org/
 
