@@ -56,7 +56,7 @@ abstract BsonDocument(BsonDocumentBase) {
 	static function parsePos(pos:Dynamic) {
 		var s = Std.string(pos).split(':');
 		var line = Std.parseInt(s[1]);
-		var s = s[2].split('characters ')[1].split('-');
+		var s = s[2].split(s[2].indexOf('lines') == -1 ? 'characters ' : 'lines ')[1].split('-');
 		var min = Std.parseInt(s[0]);
 		var max = Std.parseInt(s[1]);
 		return {
