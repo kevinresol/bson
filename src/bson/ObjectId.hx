@@ -28,6 +28,10 @@ abstract ObjectId(ObjectIdBase) from ObjectIdBase to ObjectIdBase {
 	@:op(A == B)
 	public inline function eq(b:ObjectId):Bool
 		return this.bytes.toHex() == b.bytes.toHex();
+		
+	@:op(A > B)
+	public inline function gt(b:ObjectId):Bool
+		return Reflect.compare(this.valueOf(), b.valueOf()) > 0;
 }
 
 private class ObjectIdBase {

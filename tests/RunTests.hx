@@ -4,6 +4,12 @@ package;
 import haxe.unit.TestRunner;
 import haxe.unit.TestCase;
 
+#if flash
+import flash.system.System.exit;
+#else
+import Sys.exit;
+#end
+
 using StringTools;
 
 class RunTests {
@@ -15,11 +21,7 @@ class RunTests {
 		t.add(new TestEncoder());
 		t.add(new TestDecoder());
 		t.add(new TestComplex());
-		if(!t.run()) {
-			#if sys
-			Sys.exit(500);
-			#end
-		}
+		exit(t.run() ? 0 : 500);
 	}
 	
 	
