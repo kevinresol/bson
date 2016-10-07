@@ -36,8 +36,8 @@ abstract ObjectId(ObjectIdBase) from ObjectIdBase to ObjectIdBase {
 
 private class ObjectIdBase {
 	
-	static var pid = Std.random(1 << 15);
-	static var sequence = Std.random(1 << 23);
+	static var pid = Std.random(1 << 16);
+	static var sequence = Std.random(1 << 24);
 	static var machine = Bytes.ofString(Md5.encode(
 		#if php
 			try sys.net.Host.localhost() catch(e:Dynamic) 'php'
