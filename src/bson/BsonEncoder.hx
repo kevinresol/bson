@@ -15,15 +15,19 @@ class BsonEncoder {
 		else if(BsonDocument.is(o))
 			bson.writeBsonDocument(o);
 		else
-			throw "Cannot only encode object or BsonDocument"; // TODO: handle class instances and maps?
+			throw "Can only encode object or BsonDocument"; // TODO: handle class instances and maps?
 		return bson.getBytes();
 	}
 	
 	public static function encodeMultiple(arr:Array<Dynamic>):Bytes {
 		var bson = new BsonOutput();
 		for(o in arr) {
-			if(Type.typeof(o) != TObject) throw "Cannot encode non-object"; // TODO: handle class instances and maps?
-			bson.writeObject(o);
+			if(Type.typeof(o) == TObject)
+				bson.writeObject(o);
+			else if(BsonDocument.is(o))
+				bson.writeBsonDocument(o);
+			else
+				throw "Can only encode object or BsonDocument"; // TODO: handle class instances and maps?
 		}
 		return bson.getBytes();
 	}
