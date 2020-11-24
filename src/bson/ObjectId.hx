@@ -41,6 +41,8 @@ private class ObjectIdBase {
 	static var machine = Bytes.ofString(Md5.encode(
 		#if php
 			try sys.net.Host.localhost() catch(e:Dynamic) 'php'
+		#elseif hl
+			try sys.net.Host.localhost() catch(e:Dynamic) 'hl' 
 		#elseif sys 
 			sys.net.Host.localhost() 
 		#else 
